@@ -5,6 +5,8 @@ const imgsMarkup = createImageCardsMarkup(images);
 
 galleryUl.insertAdjacentHTML('beforeend', imgsMarkup);
 
+galleryUl.addEventListener('click', onImgCardClick);
+
 function createImageCardsMarkup(images) {
     return images.map(({ preview, original, description }) => {
         return `
@@ -24,3 +26,12 @@ function createImageCardsMarkup(images) {
     }).join('');
 }
 
+function onImgCardClick(e) {
+    // e.preventDefault();
+
+    const isItemEl = e.target.classList.contains('gallery__image');
+    // if (!isItemEl) {
+    //     return;
+    // }
+    console.log(e.target);
+}
