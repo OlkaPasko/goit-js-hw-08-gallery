@@ -4,7 +4,6 @@ const galleryUl = document.querySelector('.js-gallery');
 const imgsMarkup = createImageCardsMarkup(images);
 
 galleryUl.insertAdjacentHTML('beforeend', imgsMarkup);
-
 galleryUl.addEventListener('click', onImgCardClick);
 
 function createImageCardsMarkup(images) {
@@ -27,11 +26,66 @@ function createImageCardsMarkup(images) {
 }
 
 function onImgCardClick(e) {
-    // e.preventDefault();
+    e.preventDefault();
 
     const isItemEl = e.target.classList.contains('gallery__image');
-    // if (!isItemEl) {
-    //     return;
-    // }
-    console.log(e.target);
+    if (!isItemEl) {
+        return;
+    }
+
+    const isModalOpen = document.querySelector('.js-lightbox.is-open');
+
+    if (!isModalOpen) {
+        const lightboxEl = document.querySelector('.js-lightbox');
+        lightboxEl.classList.add('is-open');
+
+        document.body.addEventListener('keydown', onKeyPressCheck);
+
+        const imgLightboxEl = lightboxEl.querySelector('.lightbox__image');
+        imgLightboxEl.src = e.target.dataset.source;
+        imgLightboxEl.alt = e.target.alt;
+
+        const btnCloseEl = document.querySelector('[data-action="close-lightbox"]');
+        btnCloseEl.addEventListener('click', onCloseModal);
+    }
+}
+
+function onCloseModal() {
+    document.querySelector('.js-lightbox.is-open')?.classList.remove('is-open');
+    document.body.removeEventListener('keydown', onKeyPressCheck);
+}
+
+function onKeyPressCheck(e) {
+    switch (e.code) {
+        case "Escape":
+            onCloseModal();
+            break;
+        case "ArrowLeft":
+            changeImg(-1);
+            break;
+        case "ArrowRight":
+            changeImg(1);
+            break;
+        default:
+            // console.log();
+    }
+}
+
+function changeImg(shift) {
+
+    const imgLightboxEl = document.querySelector('.lightbox__image');
+    const imgCurrent = images.find((img) => 
+                img.original === imgLightboxEl.src
+    );
+    
+    let newIndex = images.indexOf(imgCurrent) + shift;
+
+    if (newIndex < 0)
+        newIndex = images.length - 1;
+    
+    if (newIndex === images.length)
+        newIndex = 0;
+    
+    imgLightboxEl.src = images[newIndex].original;
+    imgLightboxEl.alt = images[newIndex].description;
 }
