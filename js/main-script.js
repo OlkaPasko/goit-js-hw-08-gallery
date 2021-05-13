@@ -53,6 +53,8 @@ function onImgCardClick(e) {
 function onCloseModal() {
     document.querySelector('.js-lightbox.is-open')?.classList.remove('is-open');
     document.body.removeEventListener('keydown', onKeyPressCheck);
+
+    clearImgBox();
 }
 
 function onKeyPressCheck(e) {
@@ -88,4 +90,10 @@ function changeImg(shift) {
     
     imgLightboxEl.src = images[newIndex].original;
     imgLightboxEl.alt = images[newIndex].description;
+}
+
+function clearImgBox() {
+    const imgLightboxEl = document.querySelector('.lightbox__image');
+    imgLightboxEl.src = '';
+    imgLightboxEl.alt = '';
 }
