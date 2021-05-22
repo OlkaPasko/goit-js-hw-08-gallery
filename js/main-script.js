@@ -1,10 +1,18 @@
 import images from './data/gallery-items.js'
 
-const galleryUl = document.querySelector('.js-gallery');
+const refs = {
+    galleryUl : document.querySelector('.js-gallery'),
+
+    isModalOpen : document.querySelector('.js-lightbox.is-open'),
+    lightboxEl : document.querySelector('.js-lightbox'),
+    imgLightboxEl : document.querySelector('.lightbox__image'),
+    btnCloseEl : document.querySelector('[data-action="close-lightbox"]'),
+};
+
 const imgsMarkup = createImageCardsMarkup(images);
 
-galleryUl.insertAdjacentHTML('beforeend', imgsMarkup);
-galleryUl.addEventListener('click', onImgCardClick);
+refs.galleryUl.insertAdjacentHTML('beforeend', imgsMarkup);
+refs.galleryUl.addEventListener('click', onImgCardClick);
 
 function createImageCardsMarkup(images) {
     return images.map(({ preview, original, description }) => {
@@ -28,25 +36,22 @@ function createImageCardsMarkup(images) {
 function onImgCardClick(e) {
     e.preventDefault();
 
-    const isItemEl = e.target.classList.contains('gallery__image');
-    if (!isItemEl) {
+    // const isItemEl = e.target.classList.contains('gallery__image');
+    // if (!isItemEl) 
+    //     return;
+
+    if (e.target.tagName !== "IMG")
         return;
-    }
 
-    const isModalOpen = document.querySelector('.js-lightbox.is-open');
+    if (!refs.isModalOpen) {
 
-    if (!isModalOpen) {
-        const lightboxEl = document.querySelector('.js-lightbox');
-        lightboxEl.classList.add('is-open');
+        refs.lightboxEl.classList.add('is-open');
 
         document.body.addEventListener('keydown', onKeyPressCheck);
 
-        const imgLightboxEl = lightboxEl.querySelector('.lightbox__image');
-        imgLightboxEl.src = e.target.dataset.source;
-        imgLightboxEl.alt = e.target.alt;
+        setImg(e.target.dataset.source, e.target.alt);
 
-        const btnCloseEl = document.querySelector('[data-action="close-lightbox"]');
-        btnCloseEl.addEventListener('click', onCloseModal);
+        refs.btnCloseEl.addEventListener('click', onCloseModal);
     }
 }
 
@@ -75,9 +80,8 @@ function onKeyPressCheck(e) {
 
 function changeImg(shift) {
 
-    const imgLightboxEl = document.querySelector('.lightbox__image');
     const imgCurrent = images.find((img) => 
-                img.original === imgLightboxEl.src
+                img.original === refs.imgLightboxEl.src
     );
     
     let newIndex = images.indexOf(imgCurrent) + shift;
@@ -87,13 +91,16 @@ function changeImg(shift) {
     
     if (newIndex === images.length)
         newIndex = 0;
-    
-    imgLightboxEl.src = images[newIndex].original;
-    imgLightboxEl.alt = images[newIndex].description;
+
+    setImg(images[newIndex].original,
+        images[newIndex].description);
 }
 
 function clearImgBox() {
-    const imgLightboxEl = document.querySelector('.lightbox__image');
-    imgLightboxEl.src = '';
-    imgLightboxEl.alt = '';
+    setImg('', '');
+}
+
+function setImg(src, alt) {
+    refs.imgLightboxEl.src = src;
+    refs.imgLightboxEl.alt = alt;
 }
